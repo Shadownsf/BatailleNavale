@@ -1,0 +1,23 @@
+{
+  "name": "bataillenavale",
+  "version": "1.0.0",
+  "description": "application web permettant de jouer à la bataille navale en ligne",
+  "main": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "json-server --watch store.json --port 3001"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shadownsf/BatailleNavale.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Shadownsf/BatailleNavale/issues"
+  },
+  "homepage": "https://github.com/Shadownsf/BatailleNavale#readme",
+  "dependencies": {
+    "json-server": "^0.15.0"
+  }
+}

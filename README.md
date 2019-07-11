@@ -6,10 +6,14 @@ application web permettant de jouer à la bataille navale en ligne
 
 pour lancer le server 'json-server' vous devez :
 
-1. éxécutez la commande suivant
+0. installation
+
+   npm i
+
+1. Exécutez la commande suivante
 
    npm run server
 
-2. cliquer sur le lien
+1. Cliquer sur le lien
 
    http://localhost:3001/

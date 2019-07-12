@@ -3,14 +3,14 @@
 [<AutoOpen>]
 module RestFul =
     open Suave
+    open SuaveJwt
     open Successful
     open Suave.Filters
     open Suave.Operators
     open Newtonsoft.Json
     open Suave.RequestErrors
     open Newtonsoft.Json.Serialization
-
-
+    
     type RestResource<'T> = {
         GetAll:unit -> 'T seq
         Create:'T -> 'T
@@ -61,12 +61,23 @@ module RestFul =
         let doesResourceExist id =
             if resource.Exists id then OK "" else NOT_FOUND ""
 
+        let base64Key =
+            Base64String.fromString "Op5EqjC7aLS2dx3gIOzADPIZGX2As6UEWjA4oyBjMo"
+
+        let jwtConfig = {
+            Issuer = "http://localhost:8083/suave"
+            ClientId = "7ff79ba3305c4e4f9d0ececeae70c78f"
+            SecurityKey = KeyStore.securityKey base64Key
+        }
+
         choose [
-            path resourcePath >=> choose [
-                GET >=> getAll
-                POST >=> request (getResourceFromReq >> resource.Create >> toJson)
-                PUT >=> request (getResourceFromReq >> resource.Update >> handleResource badRequest)
-            ]
+            path resourcePath
+                >=> jwtAuthenticate jwtConfig (OK "access granted")
+                >=> choose [
+                    GET >=> getAll
+                    POST >=> request (getResourceFromReq >> resource.Create >> toJson)
+                    PUT >=> request (getResourceFromReq >> resource.Update >> handleResource badRequest)
+                ]
             DELETE >=> pathScan resourceIdPath deleteResourceById
             GET >=> pathScan resourceIdPath getResourceById
             PUT >=> pathScan resourceIdPath updateResourceById

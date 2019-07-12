@@ -56,18 +56,15 @@ update action model =
 updateCase : (Int, Int) -> CaseBoard -> CaseBoard
 updateCase (x, y) bCase = 
     if bCase.positionX == x && bCase.positionY == y then
-    { bCase | value = "X"}
+        { bCase | value = "X"}
     else
-    bCase
+        bCase
 
 getCase : Int -> Model -> Maybe CaseBoard
 getCase index board = 
     case List.head (getItem index board) of
         Just cBoard -> Just cBoard
         Nothing -> Nothing
-
-
-        
 
 getItem : Int -> List CaseBoard -> List CaseBoard
 getItem index board =
@@ -76,6 +73,27 @@ getItem index board =
     _ -> getItem (index + 1) (List.drop 1 board)
 
 --  View
+view : List CaseBoard -> Html Action
+view model = 
+    -- List.map createHtml (buildBoard 10 model)
+    (List.concat (buildBoard 10 model))
+    
+
+buildBoard : Int -> Model -> List (Html Action)
+buildBoard max board = 
+    if max > 0 then
+        (buildLine max board) ++ (buildBoard (max - 1) board)
+    else
+        [ div[][] ]
+
+buildLine : Int -> Model -> List (Html Action)
+buildLine max board = 
+    if max > 0 then
+        case getCase (10 - max) board of
+            Just a      ->      [ (renderCase a) ] ++ (buildLine (max - 1) board)
+            Nothing     ->      [ div[][] ]
+    else
+        [ div[][] ] 
 
 renderCase : CaseBoard -> Html Action
 renderCase caseBoard = 
@@ -83,24 +101,3 @@ renderCase caseBoard =
     [
         button[onClick (CheckCase (caseBoard.positionX, caseBoard.positionY))][text caseBoard.value]
     ]
-
-view : List CaseBoard -> Html Action
-view model = 
-    div[] [(buildBoard 10 model)]
-    -- div[] <| List.indexedMap buildBoard model
-
-buildBoard : Int -> Model -> Html Action
-buildBoard max board = 
-        if max > 0 then
-            case getCase (10 - max) board of
-            Just a ->   div[][(renderCase a)]
-            Nothing ->  div[][]
-        else
-            div[][]
-
--- buildBoard : Int -> CaseBoard -> Html Action
--- buildBoard idx caseBoard = 
---     case idx of
---     10 -> 
---     10 -> 
---     _ -> renderCase caseBoard

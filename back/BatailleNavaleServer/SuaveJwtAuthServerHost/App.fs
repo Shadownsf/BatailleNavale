@@ -14,7 +14,7 @@ let main argv =
         SaveAudience = AudienceStorage.saveAudience
         GetAudience = AudienceStorage.getAudience
         Issuer = "http://localhost:8080/suave"
-        TokenTimeSpan = TimeSpan.FromMinutes(1.)
+        TokenTimeSpan = TimeSpan.FromMinutes(60.)
     }
 
     let identityStore = {

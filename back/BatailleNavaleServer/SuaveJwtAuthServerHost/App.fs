@@ -13,7 +13,7 @@ let main argv =
         CreateTokenUrlPath = "/oauth2/token"
         SaveAudience = AudienceStorage.saveAudience
         GetAudience = AudienceStorage.getAudience
-        Issuer = "http://localhost:8080/suave"
+        Issuer = "http://localhost:8083/suave"
         TokenTimeSpan = TimeSpan.FromMinutes(60.)
     }
 

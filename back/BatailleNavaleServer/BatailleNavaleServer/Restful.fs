@@ -10,6 +10,7 @@ module RestFul =
     open Newtonsoft.Json
     open Suave.RequestErrors
     open Newtonsoft.Json.Serialization
+    open Microsoft.IdentityModel.Claims
     
     type RestResource<'T> = {
         GetAll:unit -> 'T seq
@@ -70,9 +71,17 @@ module RestFul =
             SecurityKey = KeyStore.securityKey base64Key
         }
 
+        let authorizeAdmin (claims:Claim seq) =
+            let isAdmin (c:Claim) =
+                c.ClaimType = ClaimTypes.Role && c.Value = "Admin"
+            match claims |> Seq.tryFind isAdmin with
+            | Some _ -> Authorized |> async.Return
+            | None -> UnAuthorized "User is not an admin" |> async.Return
+
         choose [
             path resourcePath
                 >=> jwtAuthenticate jwtConfig (OK "access granted")
+                >=> jwtAuthorize jwtConfig authorizeAdmin (OK "rights granted")
                 >=> choose [
                     GET >=> getAll
                     POST >=> request (getResourceFromReq >> resource.Create >> toJson)

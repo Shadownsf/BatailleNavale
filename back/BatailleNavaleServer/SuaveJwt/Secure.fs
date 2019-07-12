@@ -5,12 +5,17 @@ module Secure =
     open Microsoft.IdentityModel.Tokens
     open Suave.RequestErrors
     open Suave.Http
+    open Microsoft.IdentityModel.Claims
 
     type JwtConfig = {
         Issuer: string
         SecurityKey: SecurityKey
         ClientId: string
     }
+
+    type AuthorizationResult =
+        | Authorized
+        | UnAuthorized of string
 
     let jwtAuthenticate jwtConfig webpart (ctx: HttpContext) =
         let updateContextWithClaims claims =
@@ -33,5 +38,28 @@ module Secure =
             | Choice2Of2 err -> FORBIDDEN err ctx
         | _ ->
             BAD_REQUEST "Invalid Request; Provide both clientId and token" ctx
+
+    let jwtAuthorize jwtConfig authorizeUser webpart =
+        let getClaims (ctx: HttpContext) =
+            let userState = ctx.userState
+            if userState.ContainsKey ("Claims") then
+                match userState.Item "Claims" with
+                | :? (Claim seq) as claims -> Some claims
+                | _ -> None
+            else
+                None
+
+        let authorize httpContext =
+            match getClaims httpContext with
+            | Some claims ->
+                async {
+                    let! authorizationResult = authorizeUser claims
+                    match authorizationResult with
+                    | Authorized -> return! webpart httpContext
+                     |UnAuthorized err -> return! FORBIDDEN err httpContext
+                }
+            | None -> FORBIDDEN "Claims not found" httpContext
+
+        jwtAuthenticate jwtConfig authorize
 
 

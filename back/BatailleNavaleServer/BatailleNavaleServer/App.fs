@@ -1,25 +1,20 @@
 ﻿open SuaveRestApi.Rest
-open SuaveRestApi.Db
-open Suave.Http
 open Suave.Web
 
 [<EntryPoint>]
 let main argv =
-    let playerWebpart = rest "player" {
-        GetAll = Db.getPlayers
-        Create = Db.createPlayer
-        Update = Db.updatePlayer
-        Delete = Db.deletePlayer
-        GetById = Db.getPlayerById
-        UpdateById = Db.updatePlayerById
-        Exists = Db.doesPlayerExist
-    }
-
-    let config =
-        { defaultConfig
-            with bindings = [HttpBinding.createSimple HTTP "127.0.0.1" 8080]}
-
-    // startWebserver defaultConfig (choose [personWebPart;otherWebPart])
-    startWebServer config playerWebpart
-
-    0
+  
+  let restResource = {
+    GetPlayers = Db.GetPlayers
+    CreatePlayer = Db.createPlayer
+    UpdatePlayer = Db.updatePlayer
+    GetPlayerById = Db.GetPlayerById
+    DeletePlayer = Db.deletePlayer
+    IsPlayerExists = Db.IsPlayerExists
+  }
+ 
+  let playerWebPart = rest "people" restResource
+ 
+  startWebServer defaultConfig playerWebPart
+  //startWebServer defaultConfig (choose [playerWebPart;albumWebPart])
+  0

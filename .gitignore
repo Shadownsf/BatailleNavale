@@ -21,6 +21,10 @@ Suave.sln.DotSettings.user
 *.swp
 *.suo
 *.orig
+*.lock
+*.nuspec
+*.bak
+*.fsproj
 
 _UpgradeReport_Files/
 Backup/
@@ -28,13 +32,9 @@ test-results/
 
 AssemblyInfo.fs
 paket.exe
-*.lock
-!paket.lock
-*.nuspec
+
 
 .DS_Store
-*.bak
-*.fsproj
 paket-files/
 docs/output/
 
@@ -45,3 +45,4 @@ tools/coreclr/
 tools/dotnet-install.*
 .vs/
 .vscode/
+!paket.lock

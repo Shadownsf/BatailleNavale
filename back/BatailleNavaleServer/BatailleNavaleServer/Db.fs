@@ -2,11 +2,22 @@
 
 open System.Collections.Generic
 
+type Position = {
+    X: int
+    Y: int
+}
+
+type Boat = {
+    Name: string
+    Positions: List<Position>
+}
+
 type Player = {
     Id: int
     Name: string
     Age: int
     Email: string
+    Boats: List<Boat>
 }
 
 module Db =

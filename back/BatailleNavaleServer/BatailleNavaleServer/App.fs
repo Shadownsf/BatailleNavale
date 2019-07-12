@@ -5,14 +5,14 @@ open Suave.Web
 
 [<EntryPoint>]
 let main argv =
-    let personWebPart = rest "people" {
-        GetAll = Db.getPeople
-        Create = Db.createPerson
-        Update = Db.updatePerson
-        Delete = Db.deletePerson
-        GetById = Db.getPerson
-        UpdateById = Db.updatePersonById
-        Exists = Db.doesPersonExist
+    let playerWebpart = rest "player" {
+        GetAll = Db.getPlayers
+        Create = Db.createPlayer
+        Update = Db.updatePlayer
+        Delete = Db.deletePlayer
+        GetById = Db.getPlayerById
+        UpdateById = Db.updatePlayerById
+        Exists = Db.doesPlayerExist
     }
 
     let config =
@@ -20,6 +20,6 @@ let main argv =
             with bindings = [HttpBinding.createSimple HTTP "127.0.0.1" 8080]}
 
     // startWebserver defaultConfig (choose [personWebPart;otherWebPart])
-    startWebServer config personWebPart
+    startWebServer config playerWebpart
 
     0

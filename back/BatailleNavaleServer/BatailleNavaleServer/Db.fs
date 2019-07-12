@@ -2,7 +2,7 @@
 
 open System.Collections.Generic
 
-type Person = {
+type Player = {
     Id: int
     Name: string
     Age: int
@@ -10,34 +10,33 @@ type Person = {
 }
 
 module Db =
-    let private peopleStorage = new Dictionary<int, Person>()
+    let private playerStorage = new Dictionary<int, Player>()
+    let getPlayers () = playerStorage.Values :> seq<Player>
 
-    let getPeople () = peopleStorage.Values :> seq<Person>
+    let createPlayer player =
+        let id = playerStorage.Values.Count + 1
+        let newPlayer= {player with Id = id}
+        playerStorage.Add(id, newPlayer)
+        newPlayer
 
-    let createPerson person =
-        let id = peopleStorage.Values.Count + 1
-        let newPerson = {person with Id = id}
-        peopleStorage.Add(id, newPerson)
-        newPerson
-
-    let updatePersonById personId personToBeUpdated =
-        if peopleStorage.ContainsKey(personId) then
-            let updatedPerson = { personToBeUpdated with Id = personId }
-            peopleStorage.[personId] <- updatedPerson
-            Some updatedPerson
+    let updatePlayerById playerId playerToBeUpdated =
+        if playerStorage.ContainsKey(playerId) then
+            let updatedPlayer = { playerToBeUpdated with Id = playerId }
+            playerStorage.[playerId] <- updatedPlayer
+            Some updatedPlayer
         else
             None
 
-    let updatePerson personToBeUpdated =
-        updatePersonById personToBeUpdated.Id personToBeUpdated
+    let updatePlayer playerToBeUpdated =
+        updatePlayerById playerToBeUpdated.Id playerToBeUpdated
 
-    let deletePerson personId =
-        peopleStorage.Remove(personId) |> ignore
+    let deletePlayer personId =
+        playerStorage.Remove(personId) |> ignore
 
-    let getPerson id =
-        if peopleStorage.ContainsKey(id) then
-            Some peopleStorage.[id]
+    let getPlayerById id =
+        if playerStorage.ContainsKey(id) then
+            Some playerStorage.[id]
         else
             None
 
-    let doesPersonExist = peopleStorage.ContainsKey
+    let doesPlayerExist = playerStorage.ContainsKey

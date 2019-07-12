@@ -34,6 +34,7 @@ paket.exe
 
 .DS_Store
 *.bak
+*.fsproj
 paket-files/
 docs/output/
 

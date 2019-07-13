@@ -6,13 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Brouillon.fsx" />
-    <Compile Include="Restful.fs" />
+    <None Include="Brouillon.fs" />
     <Compile Include="Db.fs" />
+    <Compile Include="RestfulService.fs" />
+    <Compile Include="RestfulPlayer.fs" />
+    <Compile Include="RestfulGame.fs" />
+    <Compile Include="GameInit.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
-
-  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel" Version="7.0.0" />

@@ -2,14 +2,13 @@
 open System.Collections.Generic
 open System
 
-type Position = {
-  X: int
-  Y: int
-}
+
+//x y et (subit une balle ou pas)
+type Position = int * int * bool
 
 type Boat = {
-  Name: string
-  Positions: List<Position>
+  Name: string;
+  Positions: list<Position>
 }
 
 type Player = {
@@ -17,14 +16,47 @@ type Player = {
   Name : string;
   Password : string;
   Token : string
-  //Boats: List<Boat>
+  Boats: list<Boat>
+}
+
+//record pour /status
+type Plan = {
+  Jouer : Player;
+  PointsMissed : List<Position>
 }
 
 module Db =
-  //Créer un dictonaire de playernes
+  let numberOfBoats = 1   //Le nombre total des bateau pour chaque jouer
+  let numberOfPoints = 3  //le monbre de points pour construire les bateaux
+  let demension = (10, 10)  //largeur = 10, longeur = 10
+  let mutable gameStatus = 0
+  (*
+  0 Négotiation des plans
+  1 Prêt à jouer
+  2 Fin du jeu
+  *)
+  let mutable invitingPlayer = 0
+  let mutable playerTurn = 0
+
+  //On a plusieurs utilisateurs mais on n'en a besoin que deux pour un jeu
   let private playerStorage = new Dictionary<int, Player>()
+  //Pour récuper le jouer par son jeton
   let private tokenStorage = new Dictionary<string, Player>()
- 
+  //la liste de points ratés. le poit avec le bouléan étant true appartient au Jouer A
+  let private pointsMissed = new List<Position>()
+
+  let AddToken player =
+    tokenStorage.Add(player.Token, player)
+
+
+  let createPlayer player =
+    let id = playerStorage.Values.Count + 1
+    let token = Guid.NewGuid().ToString()
+    let newPlayer = {player with Id = id; Token = token}
+    playerStorage.Add(id, newPlayer)
+    tokenStorage.Add(token, newPlayer)
+    newPlayer
+
   let updatePlayerById playerId playerToBeUpdated =
     if playerStorage.ContainsKey(playerId) then
       let updatedPlayer = { playerToBeUpdated with Id = playerId }
@@ -41,36 +73,19 @@ module Db =
   
   let IsPlayerExists = playerStorage.ContainsKey
   
-  let createPlayer player =
-    let id = playerStorage.Values.Count + 1
-    let token = Guid.NewGuid().ToString()
-    let newPlayer = {player with Id = id; Token = token}
-    playerStorage.Add(id, newPlayer)
-    tokenStorage.Add(token, newPlayer)
-    newPlayer
- 
   let GetPlayerById id =
     if playerStorage.ContainsKey(id) then
       Some playerStorage.[id]
     else
     None
 
-  let addPlayer nom password token =
-    let id = playerStorage.Values.Count + 1
-    let token = Guid.NewGuid().ToString()
-    let player =
-      {Player.Id = id;
-      Player.Name = nom;
-      Player.Password = password;
-      Player.Token = token}
-    playerStorage.Add(id, player)
-    tokenStorage.Add(token, player)
-    player
- 
   let GetPlayers () =
     playerStorage.Values |> Seq.map (fun p -> p)
 
-  let storePlayer filePath =
-    System.IO.File.AppendAllText(filePath, sprintf "%s\n" filePath)
-
+  let GetToken playerId password =
+    let mutable r = ""
+    if (playerStorage.ContainsKey(playerId)) then
+      if (password = playerStorage.[playerId].Password) then
+        r <- playerStorage.[playerId].Token
+    r
  

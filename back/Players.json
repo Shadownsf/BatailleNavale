@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "name": "PlayerA",
+    "password": "PlayerA",
+    "token": "204e77e8-1e20-48a9-b154-c5dcdf0b96e7",
+    "boats": [
+      {
+        "name": "BoatA",
+        "positions": [
+          {
+            "item1": 2,
+            "item2": 2,
+            "item3": true
+          },
+          {
+            "item1": 2,
+            "item2": 3,
+            "item3": true
+          },
+          {
+            "item1": 2,
+            "item2": 4,
+            "item3": true
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "PlayerB",
+    "password": "PlayerB",
+    "token": "4dc57cc4-fcc2-4c42-8c51-4a2456a82275",
+    "boats": [
+      {
+        "name": "BoatB",
+        "positions": [
+          {
+            "item1": 2,
+            "item2": 2,
+            "item3": true
+          },
+          {
+            "item1": 2,
+            "item2": 3,
+            "item3": true
+          },
+          {
+            "item1": 2,
+            "item2": 4,
+            "item3": true
+          }
+        ]
+      }
+    ]
+  }
+]

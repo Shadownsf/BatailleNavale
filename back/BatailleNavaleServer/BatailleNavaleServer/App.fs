@@ -50,18 +50,27 @@ avec des méthod GET, POST
 *)
 [<EntryPoint>]
 let main argv =
-  
-  let playerResource = {
+  (*
+ let playerResource = {
+   GetPlayers = Db.GetPlayers
+   CreatePlayer = Db.createPlayer
+   UpdatePlayer = Db.updatePlayer
+   GetPlayerById = Db.GetPlayerById
+   DeletePlayer = Db.deletePlayer
+   IsPlayerExists = Db.IsPlayerExists
+ }
+ *)
+  let gameResource = {
+    GetToken = Db.GetToken
     GetPlayers = Db.GetPlayers
-    CreatePlayer = Db.createPlayer
-    UpdatePlayer = Db.updatePlayer
-    GetPlayerById = Db.GetPlayerById
-    DeletePlayer = Db.deletePlayer
-    IsPlayerExists = Db.IsPlayerExists
+    GetMap = Db.GetMap
+    PutMap = Db.PutMap
+    GetBoats = Db.GetBoats
   }
  
-  let playeWebPart = playerRest "player" playerResource
+  //let playeWebPart = playerRest "player" playerResource
+  let gampeWebPart = gameRest "game" gameResource
   createPlayers |> ignore
-  startWebServer defaultConfig playeWebPart
+  startWebServer defaultConfig gampeWebPart
   //startWebServer defaultConfig (choose [playeWebPart; authWebPart])
   0

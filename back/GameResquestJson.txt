@@ -1,0 +1,56 @@
+POST /game/token : pour obtenir le token d'un jouer en envoyant la requête et puis le réponse
+{
+  "id": 1,
+  "password": "PlayerA",
+}
+response:
+{
+  "token": "PlayerA"
+}
+
+POST /game/map : pour obtenir le map d'un jouer en envoyant la requête et puis le réponse
+{
+  "token": "PlayerA"
+}
+response:
+{
+  "jouer": {
+    "id": 1,
+    "name": "PlayerA",
+    "password": "PlayerA",
+    "token": "PlayerA",
+    "boats": []
+  },
+  "missedPoints": []
+}
+PUT /game/map : pour envoyer la liste des bateaux en attendant la réponse comme la confirmation
+{
+  "token": "PlayerA",
+  "boats": [
+    {
+      "name": "BoatA",
+      "positions": [
+        {
+          "item1": 2,
+          "item2": 2,
+          "item3": true
+        },
+        {
+          "item1": 2,
+          "item2": 3,
+          "item3": true
+        },
+        {
+          "item1": 2,
+          "item2": 4,
+          "item3": true
+        }
+      ]
+    }
+  ]
+}
+response
+{
+  "numberOfBoats": 1,
+  "numberOfPoints": 2
+}

@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="Brouillon.fs" />
+    <Compile Include="DbType.fs" />
     <Compile Include="Db.fs" />
     <Compile Include="RestfulService.fs" />
     <Compile Include="RestfulPlayer.fs" />

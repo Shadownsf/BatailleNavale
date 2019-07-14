@@ -40,10 +40,11 @@ module RestfulPlayer =
 
     let isResourceExists id =
       let isExits = resource.IsPlayerExists id
-      printfn "resource %b" isExits
       if isExits then OK "" else NOT_FOUND ""
-
+ 
+   
     choose [
+
       path resourcePath >=> choose [
       Filters.GET >=> getAll
       Filters.POST >=> request (getResourceFromReq >> resource.CreatePlayer >> JSON)

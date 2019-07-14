@@ -22,19 +22,9 @@ module GameInit =
       Name = "PlayerB";
       Password = "PlayerB";
       Token = "PlayerB";
-      Boats = [
-        {Boat.Name="BoatB";
-          Positions = [
-            (2,2,true);
-            (2,3,true);
-            (2,4,true);
-          ]
-        }
-      ]
+      Boats = []
     }
     let newPlayerA = Db.createPlayer pA
     let newPlayerB = Db.createPlayer pB
-    Db.AddToken newPlayerA
-    Db.AddToken newPlayerB
     [newPlayerA; newPlayerB]
  

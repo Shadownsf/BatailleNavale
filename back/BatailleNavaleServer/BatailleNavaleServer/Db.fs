@@ -90,21 +90,20 @@ module Db =
       nOfPoints <- b.Positions.Count
     (nOfBoats, nOfPoints)
  
- 
   let PutMap (request : MapPUTRequest) =
     let mutable nBoats = 0
     let mutable nPoints = 0
     if (tokenStorage.ContainsKey(request.Token)) then
-      let requestionPlayer = tokenStorage.[request.Token]
+      let requestingPlayer = tokenStorage.[request.Token]
       if (numberOfBoats, numberOfPoints) = (CountBoatsPoints request.Boats) then
         nBoats <- numberOfBoats
         nPoints <- numberOfPoints
         if (invitingPlayer = 0) then
-          invitingPlayer <- requestionPlayer.Id
-          playerAId <- requestionPlayer.Id
-          playerIdTurn <- requestionPlayer.Id
+          invitingPlayer <- requestingPlayer.Id
+          playerAId <- requestingPlayer.Id
+          playerIdTurn <- requestingPlayer.Id
         else
-          playerBId <- requestionPlayer.Id
+          playerBId <- requestingPlayer.Id
         if (playerAId > 0) && (playerBId > 0) then
           gameStatus <- 1
 
@@ -147,9 +146,11 @@ module Db =
             getShot <- 1
           j <- j + 1
         i <- i + 1
+    //invalide
     if getShot <> -1 then
       playerIdTurn <- ennemiId
-    elif getShot = 0 then
+    //valide et hors de cible
+    if getShot = 0 then
        missedPoints.Add((bX, bY, enemyBool))
     getShot
 

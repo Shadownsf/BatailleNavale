@@ -1,4 +1,5 @@
-﻿namespace SuaveRestApi.Rest
+﻿//La partie du service Rest sur la logic du jeu
+namespace SuaveRestApi.Rest
 open System.Collections.Generic
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization

@@ -1,4 +1,5 @@
-﻿namespace SuaveRestApi.Rest
+﻿//La partie du service Rest sur la guestion de joueurs
+namespace SuaveRestApi.Rest
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
 open Suave.Successful
@@ -9,7 +10,6 @@ open Suave.Operators
 open System.Text
 
 //record type representing a RESTful resource
- //
 type PlayerResource<'a> = {
   GetPlayers : unit -> 'a seq
   CreatePlayer : 'a -> 'a

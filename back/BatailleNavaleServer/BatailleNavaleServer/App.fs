@@ -2,64 +2,54 @@
 open Suave.Web
 open GameInit
 open System.Collections.Generic
-(*
+open Suave
 
-Je propose le déroulement du jeu en étapes:
+(*
+Le déroulement du jeu en étapes:
+0) Identification du joueur
+-> le joueur envoie en POST au /game/token pour obtenir son jeton
+   en fournissant son identifiant et son mot de passe.
+   Il le joint dans toutes ses requêtes pour que le Rest API le connaisse
+<- /game/token lui repond en lui renvoyant son jeton
 
 1) Négotiation des plans
--> le jouer POST à /plan son plan
-<- /plan confirme son plan (1 OK, 0 KO, on peut définir plus tard d'autres code)
--> le jouer GET à /plan son token pour savoir si l'autre jour est prêt
-<- /plan confirme que l'autre jouer est prêt (1 OK, 0 KO, ...)
+-> le joueur envoie en PUT à /game/map son plan
+<- /game/map confirme son plan (1 OK | 0 KO)
+-> le joueur envoie en POST à /game/map voir son plan
 
 2) Jeu
--> le jouer POST à /play sa balle pour attaquer l'enemi
-<- /play confirme la précision (1 réussite, 0 raté)
-
-3) Statut du jeu
--> le jouer GET à /status pour demander le statut du jeu
-<- /status répond avec tous les informations
+-> le joueur envoie en POST à /game/status pour voir le stut du jeu
+<- /game/status repond
+  (-1 Problème de authentification, 0 le jeu n'est pas prêt, 1 il est prêt)
+-> le jouer envoie en POST à /game/status sa balle (position) pour attaquer l'enemi
+<- /play confirme la précision (-1 : problème | 1 réussite | 0 hors de cible)
 
 4) Fin du jeu : si l'un des deux jouers a gagné
 -> le jouer demande quoi que ce soit
 <- l'api répond 100
--> le jouer GET à /status pour demander le statut du jeu
-<- /status répond avec tous les informations y compris le plan de son enemi
--> le jouer GET à /end pour confirmer la fin du jeu pour qu'il puisse jouer encore
-<- /end confirme la fin du jeu
 
-Au niveau de conception, je propose
+Au niveau de conception :
 Prédéfinir des paramètres:
 numberOfBoats : Le nombre total des bateau pour chaque jouer
 numberOfPoints : le monbre de points pour construire les bateaux
 
-la réponse du /status donne
-- le plan complet du jouer
-- les points d'attaque des deux jouers (soit endomagés ou non)
-On a donc besoin :
-- un champs booléan complémentaire dans le Position pour indiquer que ce point recoit une balle ou non: type Position = int * int * bool
-- deux listes de points attaqués.
-
-On doit se mettre d'accord sur les routes:
-/plan
-/play
-/status
-/end
-avec des méthod GET, POST
+Toute la base se stocke en mémoire
 
 *)
 [<EntryPoint>]
 let main argv =
-  (*
- let playerResource = {
-   GetPlayers = Db.GetPlayers
-   CreatePlayer = Db.createPlayer
-   UpdatePlayer = Db.updatePlayer
-   GetPlayerById = Db.GetPlayerById
-   DeletePlayer = Db.deletePlayer
-   IsPlayerExists = Db.IsPlayerExists
- }
- *)
+ 
+  //Les resources de guestion de joueurs
+  let playerResource = {
+    GetPlayers = Db.GetPlayers
+    CreatePlayer = Db.createPlayer
+    UpdatePlayer = Db.updatePlayer
+    GetPlayerById = Db.GetPlayerById
+    DeletePlayer = Db.deletePlayer
+    IsPlayerExists = Db.IsPlayerExists
+  }
+
+  //les resources du jeu
   let gameResource = {
     GetToken = Db.GetToken
     GetPlayers = Db.GetPlayers
@@ -69,9 +59,12 @@ let main argv =
     Shoot = Db.Shoot
   }
  
-  //let playeWebPart = playerRest "player" playerResource
+  let playerWebPart = playerRest "player" playerResource
   let gampeWebPart = gameRest "game" gameResource
+ 
+  //Création deux joueurs pour les tests
   createPlayers |> ignore
-  startWebServer defaultConfig gampeWebPart
-  //startWebServer defaultConfig (choose [playeWebPart; authWebPart])
+ 
+  //On divise en deux parties associant deux chemain de base et deux resources
+  startWebServer defaultConfig (choose [gampeWebPart; playerWebPart])
   0

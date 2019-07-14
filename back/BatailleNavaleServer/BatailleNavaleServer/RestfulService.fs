@@ -1,5 +1,5 @@
-﻿namespace SuaveRestApi.Rest
-
+﻿//La partie partagée du service Rest
+namespace SuaveRestApi.Rest
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
 open Suave.Successful

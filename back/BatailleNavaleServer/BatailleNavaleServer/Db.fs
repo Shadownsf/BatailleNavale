@@ -1,8 +1,11 @@
-﻿namespace SuaveRestApi.Rest
+﻿//La base en mémoire et la logic du jeu
+namespace SuaveRestApi.Rest
 open System.Collections.Generic
 open System
 
 module Db =
+  
+  //la partie de configuration
   let numberOfBoats = 1   //Le nombre total des bateau pour chaque jouer
   let numberOfPoints = 2  //le monbre de points pour construire les bateaux
   let demension = (10, 10)  //largeur = 10, longeur = 10
@@ -19,14 +22,14 @@ module Db =
 
   //On a plusieurs utilisateurs mais on n'en a besoin que deux pour un jeu
   let private playerStorage = new Dictionary<int, Player>()
+  
   //Pour récuper le jouer par son jeton
   let private tokenStorage = new Dictionary<string, Player>()
+  
   //la liste de points ratés. le poit avec le bouléan étant true appartient au Jouer A
   let private missedPoints = new List<Position>()
  
-  let AddToken (player : Player) =
-    tokenStorage.Add(player.Token, player)
-  
+  //La partie de guestion des joueurs
   let CreateNullPlayer = {
     Player.Id = 0;
     Name = "";
@@ -34,7 +37,6 @@ module Db =
     Token = "";
     Boats = new List<Boat>()
   }
-
 
   let createPlayer (player : Player) =
     let id = playerStorage.Values.Count + 1
@@ -76,6 +78,10 @@ module Db =
   let GetPlayers () =
     playerStorage.Values |> Seq.map (fun p -> p)
 
+ 
+  //la partie du jeu
+  //entrée : identifiant et mot de passe
+  //sortie : le jeton ou une chaîne vide
   let GetToken (tokenRequest : TokenRequest) =
     let mutable r = {TokenResponse.Token = ""}
     if (playerStorage.ContainsKey(tokenRequest.Id)) then
@@ -83,6 +89,8 @@ module Db =
         r <- {TokenResponse.Token = playerStorage.[tokenRequest.Id].Token}
     r
 
+  //Entrée : une liste de bateaux
+  //Sortie : (nombre de bateaux, nombre de points)
   let CountBoatsPoints (boats : List<Boat>) =
     let nOfBoats = boats.Count
     let mutable nOfPoints = 0
@@ -90,6 +98,10 @@ module Db =
       nOfPoints <- b.Positions.Count
     (nOfBoats, nOfPoints)
  
+  //Entrée : un jeton pour identifier le joueur, une liste de bateaux
+  //Opération : Joindre la liste de bateaux au joueur
+  //Sortie : plusieurs problèmes divers si {NumberOfBoats = 0; NumberOfPoints = 0} 
+  //| OK si {NumberOfBoats = x; NumberOfPoints = y} 
   let PutMap (request : MapPUTRequest) =
     let mutable nBoats = 0
     let mutable nPoints = 0
@@ -109,13 +121,17 @@ module Db =
 
     {NumberOfBoats = nBoats; NumberOfPoints = nPoints}
  
+  //Entrée : le jeton
+  //Sortie : le plan du joueur
   let GetMap (request : GenericRequest) =
     if tokenStorage.ContainsKey(request.Token) then
       let player = tokenStorage.[request.Token]
       {MapResponse.Jouer = player; MissedPoints = missedPoints}
     else
       {MapResponse.Jouer = CreateNullPlayer; MissedPoints = new List<Position>()}
-  
+  //On tire une balle (position) à l'ennemi
+  //Entrée : la position
+  //Sortie : -1 : plusieurs problèmes | O hors de cible | 1 à cible
   let Shoot (bullet : Bullet) =
     let mutable enemyBool = true
     let mutable ennemiId = playerBId
@@ -154,6 +170,8 @@ module Db =
        missedPoints.Add((bX, bY, enemyBool))
     getShot
 
+  //Entrée : le jeton
+  //Sortie : la liste de bateaux
   let GetBoats (request : GenericRequest) =
     if tokenStorage.ContainsKey(request.Token) then
        let player = tokenStorage.[request.Token]

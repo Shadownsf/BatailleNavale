@@ -1,4 +1,5 @@
-﻿namespace SuaveRestApi.Rest
+﻿//La partie de génération de données de test
+namespace SuaveRestApi.Rest
 open System.Collections.Generic
 module GameInit =
   let createPlayers =

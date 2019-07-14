@@ -15,6 +15,8 @@
     <Compile Include="App.fs" />
   </ItemGroup>
 
+  <ItemGroup />
+
   <ItemGroup>
     <PackageReference Include="Microsoft.IdentityModel" Version="7.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

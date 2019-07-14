@@ -1,4 +1,5 @@
 ﻿namespace SuaveRestApi.Rest
+open System.Collections.Generic
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
 open Suave.Successful
@@ -15,6 +16,7 @@ type GameResource<'a> = {
   GetMap : GenericRequest -> MapResponse
   PutMap : MapPUTRequest -> MapPUTReponse
   GetBoats : GenericRequest -> MapPUTRequest
+  Shoot : Bullet -> int
   GetPlayers : unit -> 'a seq
 }
 
@@ -33,6 +35,9 @@ module RestfulGame =
       path (pathBase + "/map") >=> choose [
         Filters.POST >=> request (getResourceFromReq >> resource.GetMap >> JSON)
         Filters.PUT >=> request (getResourceFromReq >> resource.PutMap >> JSON)
+      ]
+      path (pathBase + "/shoot") >=> choose [
+        Filters.PUT >=> request (getResourceFromReq >> resource.Shoot >> JSON)
       ]
 
       Filters.GET >=> getAll

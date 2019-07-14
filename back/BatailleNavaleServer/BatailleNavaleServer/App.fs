@@ -1,7 +1,7 @@
 ﻿open SuaveRestApi.Rest
 open Suave.Web
 open GameInit
-
+open System.Collections.Generic
 (*
 
 Je propose le déroulement du jeu en étapes:
@@ -66,6 +66,7 @@ let main argv =
     GetMap = Db.GetMap
     PutMap = Db.PutMap
     GetBoats = Db.GetBoats
+    Shoot = Db.Shoot
   }
  
   //let playeWebPart = playerRest "player" playerResource

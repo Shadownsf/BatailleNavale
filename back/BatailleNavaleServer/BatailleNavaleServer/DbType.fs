@@ -1,11 +1,18 @@
 ﻿namespace SuaveRestApi.Rest
+open System.Collections.Generic
 
 //x y et (subit une balle ou pas)
 type Position = int * int * bool
 
+type Bullet = {
+  Token : string;
+  X : int;
+  Y : int
+}
+
 type Boat = {
   Name: string;
-  Positions: list<Position>
+  Positions: List<Position>
 }
 
 type Player = {
@@ -13,7 +20,7 @@ type Player = {
   Name : string;
   Password : string;
   Token : string
-  Boats: list<Boat>
+  Boats: List<Boat>
 }
 
 type GenericRequest = {
@@ -22,12 +29,12 @@ type GenericRequest = {
 
 type MapResponse = {
   Jouer : Player;
-  MissedPoints : list<Position>
+  MissedPoints : List<Position>
 }
 
 type MapPUTRequest = {
   Token : string;
-  Boats: list<Boat>
+  Boats: List<Boat>
 }
 
 type MapPUTReponse = {
@@ -43,4 +50,3 @@ type TokenRequest = {
 type TokenResponse = {
   Token : string
 }
-

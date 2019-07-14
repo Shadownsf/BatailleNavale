@@ -13,17 +13,28 @@ module Db =
   2 Fin du jeu
   *)
   let mutable invitingPlayer = 0
-  let mutable playerTurn = 0
+  let mutable playerIdTurn = 0
+  let mutable playerAId = 0
+  let mutable playerBId = 0
 
   //On a plusieurs utilisateurs mais on n'en a besoin que deux pour un jeu
   let private playerStorage = new Dictionary<int, Player>()
   //Pour récuper le jouer par son jeton
   let private tokenStorage = new Dictionary<string, Player>()
   //la liste de points ratés. le poit avec le bouléan étant true appartient au Jouer A
-  let private missedPoints = []
-
+  let private missedPoints = new List<Position>()
+ 
   let AddToken (player : Player) =
     tokenStorage.Add(player.Token, player)
+  
+  let CreateNullPlayer = {
+    Player.Id = 0;
+    Name = "";
+    Password = "";
+    Token = "";
+    Boats = new List<Boat>()
+  }
+
 
   let createPlayer (player : Player) =
     let id = playerStorage.Values.Count + 1
@@ -54,7 +65,13 @@ module Db =
     if playerStorage.ContainsKey(id) then
       Some playerStorage.[id]
     else
-    None
+      None
+
+  let GetPlayerByToken token =
+    if tokenStorage.ContainsKey(token) then
+      tokenStorage.[token]
+    else
+      CreateNullPlayer
 
   let GetPlayers () =
     playerStorage.Values |> Seq.map (fun p -> p)
@@ -66,31 +83,31 @@ module Db =
         r <- {TokenResponse.Token = playerStorage.[tokenRequest.Id].Token}
     r
 
-  let CreateNullPlayer = {
-    Player.Id = 0;
-    Name = "";
-    Password = "";
-    Token = "";
-    Boats = []
-  }
-  let CountBoatsPoints (boats : list<Boat>) =
-    let nOfBoats = boats.Length
+  let CountBoatsPoints (boats : List<Boat>) =
+    let nOfBoats = boats.Count
     let mutable nOfPoints = 0
     for b in boats do
-      nOfPoints <- b.Positions.Length
+      nOfPoints <- b.Positions.Count
     (nOfBoats, nOfPoints)
  
-
+ 
   let PutMap (request : MapPUTRequest) =
     let mutable nBoats = 0
     let mutable nPoints = 0
     if (tokenStorage.ContainsKey(request.Token)) then
       let requestionPlayer = tokenStorage.[request.Token]
       if (numberOfBoats, numberOfPoints) = (CountBoatsPoints request.Boats) then
+        nBoats <- numberOfBoats
+        nPoints <- numberOfPoints
         if (invitingPlayer = 0) then
           invitingPlayer <- requestionPlayer.Id
-          nBoats <- numberOfBoats
-          nPoints <- numberOfPoints
+          playerAId <- requestionPlayer.Id
+          playerIdTurn <- requestionPlayer.Id
+        else
+          playerBId <- requestionPlayer.Id
+        if (playerAId > 0) && (playerBId > 0) then
+          gameStatus <- 1
+
     {NumberOfBoats = nBoats; NumberOfPoints = nPoints}
  
   let GetMap (request : GenericRequest) =
@@ -98,11 +115,47 @@ module Db =
       let player = tokenStorage.[request.Token]
       {MapResponse.Jouer = player; MissedPoints = missedPoints}
     else
-      {MapResponse.Jouer = CreateNullPlayer; MissedPoints = []}
- 
+      {MapResponse.Jouer = CreateNullPlayer; MissedPoints = new List<Position>()}
+  
+  let Shoot (bullet : Bullet) =
+    let mutable enemyBool = true
+    let mutable ennemiId = playerBId
+    let mutable getShot = -1
+    let mutable r = -1
+    let bX = bullet.X
+    let bY = bullet.Y
+    let player = GetPlayerByToken bullet.Token
+    //Vérifier si le jeu est prêt
+    if ((player.Id <> 0)
+    && ((player.Id = playerAId) || (player.Id = playerBId))
+    && (gameStatus = 1)
+    && (playerIdTurn = player.Id)) then
+      getShot <- 0
+      //Chercher l'ennemi
+      if (player.Id = playerBId) then
+        ennemiId <- playerAId
+        enemyBool <- false
+      let ennemi = playerStorage.[ennemiId]
+
+      let mutable i = 0
+      let mutable j = 0
+      while (i < ennemi.Boats.Count) do
+        while (j < ennemi.Boats.[i].Positions.Count) do
+          let (x, y, recu) = ennemi.Boats.[i].Positions.[j]
+          if ((bX = x) && (bY = y)) then
+            ennemi.Boats.[i].Positions.[j] <- (bX, bY, true)
+            getShot <- 1
+          j <- j + 1
+        i <- i + 1
+    if getShot <> -1 then
+      playerIdTurn <- ennemiId
+    elif getShot = 0 then
+       missedPoints.Add((bX, bY, enemyBool))
+    getShot
+
   let GetBoats (request : GenericRequest) =
     if tokenStorage.ContainsKey(request.Token) then
        let player = tokenStorage.[request.Token]
        {MapPUTRequest.Token = player.Token; Boats = player.Boats}
     else
-       {MapPUTRequest.Token = ""; Boats = []}
+       {MapPUTRequest.Token = ""; Boats = new List<Boat>()}

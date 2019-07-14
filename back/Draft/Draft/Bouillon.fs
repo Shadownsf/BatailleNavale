@@ -1,5 +1,5 @@
 ﻿module Bouillon
-
+open System.Collections.Generic
 open Newtonsoft.Json
 open Newtonsoft.Json.Serialization
 
@@ -24,7 +24,7 @@ let p = {
   Name = "Tom";
   Password = "Tom";
   Token = "Tom";
-  Boats = [{Boat.Name = "boat"; Positions = [(1, 2, false);(3, 4, false)]}]
+  Boats = new List<Boat>()
 }
 
 let JsonToObj<'T> json =

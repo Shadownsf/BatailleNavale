@@ -54,3 +54,14 @@ response
   "numberOfBoats": 1,
   "numberOfPoints": 2
 }
+PUT /game/shoot : pour tirer au ennemi
+{
+  "token": "PlayerA",
+  "x": "2",
+  "y": "1"
+}
+{
+  "token": "PlayerA",
+  "x": "2",
+  "y": "2"
+ }
